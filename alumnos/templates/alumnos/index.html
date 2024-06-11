@@ -20,6 +20,11 @@
 
     <img src="{% static 'alumnos/img/descarga.jfif' %}" alt="">
 
+    {% for alumno in alumnos%}
+        {{alumno.rut}},{{alumno.nombre}}<br>
+    {% endfor %}
+
+
 
 </body>
 </html>
