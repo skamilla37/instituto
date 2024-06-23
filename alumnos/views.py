@@ -1,5 +1,8 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from .models import Alumno,Genero
+
+from .forms import GeneroForm
 
 # Create your views here.
 class persona:
@@ -126,8 +129,102 @@ def alumnosUpdate(request):
     else:
         alumnos = Alumno.objects.all()
         context = {'alumnos': alumnos}
-        return render(request, 'alumnos/alumnos_list.html', context)  
+        return render(request, 'alumnos/alumnos_list.html', context) 
 
+def crud_generos(request):
+    generos = Genero.objects.all()
+    context = {'generos': generos}
+    print("enviando datos generos_list")
+    return render(request,'alumnos/generos_list.html', context) 
+
+
+def generosAdd(request):
+
+    print("estoy en controlador generosAdd")
+    context = {}
+
+    if request.method == 'POST':
+        print("controlador es un post...")
+        form = GeneroForm(request.POST)
+        if form.is_valid():
+            print("estoy en agregar, is_valid...")
+            form.save()
+
+            form = GeneroForm()
+            context = {'mensaje': 'Ok, datos guardados...', 'form': form}
+            return render(request, 'alumnos/generos_add.html', context)
+        
+    else:
+        form = GeneroForm()
+        context = {'form': form}
+        return render(request, 'alumnos/generos_add.html', context)
+
+def generos_del(request, pk):
+    mensajes= []
+    errores = []
+    generos = Genero.objects.all()  
+    try:
+        genero = Genero.objects.get(id_genero=pk)
+        context={}
+        if genero:
+            genero.delete()
+            mensajes.append('Bien, datos eliminado...')
+            context = {'generos': generos, 'mensaje': mensaje, 'errores': errores}
+            return render(request, 'alumnos/generos_list.html', context)
+    except:
+        print('Error, id no existe...')
+        generos = Genero.objects.all()
+        mensaje="Error, id no existe..."
+        context = {'generos': generos, 'mensaje': mensaje}
+        return render(request, 'alumnos/generos_list.html', context)
+    
+def generos_edit(request, pk):
+    try:
+        genero=Genero.objects.get(id_genero=pk)
+        context={}
+        if genero:
+            print("edit encontró el genero...")
+            if request.method == 'POST':
+                print("edit es un post...")
+                form = GeneroForm(request.POST, instance=genero)
+                form.save()
+                mensaje = "bie, datos actualizados..."
+                context = {'genero': genero, 'form': form 'mensaje': mensaje}
+                return render(request, 'alumnos/generos_edit.html', context)
+    except:
+        print("Error, id no existe...")
+        generos = Genero.objects.all()
+        mensaje = "Error, id no existe..."
+        context = {'generos': generos, 'mensaje': mensaje}
+        return render(request, 'alumnos/generos_list.html', context)
+
+def generos_edit(request, pk):
+    try:
+        genero=Genero.objects.get(id_genero=pk)
+        context={}
+        if genero:
+            print("Edit encontró el genero...")
+            if request.method == 'POST':
+                print("edit es un POST")
+                form = GeneroForm(request.POST, instance=genero)
+                form.save()
+                mensaje = "bie, datos actualizados..."
+                print(mensaje)
+                context = {'genero': genero, 'form': form 'mensaje': mensaje}
+                return render(request, 'alumnos/generos_edit.html', context)
+            else:
+                print("edit, no es un POST...")
+                form = GeneroForm(instance=genero)
+                mensaje=""
+                context = {'genero': genero, 'form': form, 'mensaje': mensaje}
+                return render(request, 'alumnos/generos_edit.html', context)
+    except:
+        print("Error, id no existe...")
+        generos = Genero.objects.all()
+        mensaje = "Error, id no existe..."
+        context = {'generos': generos, 'mensaje': mensaje}
+        return render(request, 'alumnos/generos_list.html', context)
+ 
         
 
 
